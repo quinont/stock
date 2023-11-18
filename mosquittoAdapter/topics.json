@@ -1,0 +1,12 @@
+{
+    "topics": [
+        {
+            "topic": "/descuento/+/+/",
+            "type": "HTTPCaller"
+        },
+        {
+            "topic": "/otrotopico/#",
+            "type": "OtherTopic"
+        }
+    ]
+}

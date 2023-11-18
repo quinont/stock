@@ -26,6 +26,7 @@ class TopicSubHTTPCaller(TopicSubscriptor):
     def handler(self, client, userdata, msg, match):
         producto = match.group(1)
         cantidad = match.group(2)
+        # TODO cambiar esto por un requests post con los detalles de lo que se consumio.
         print(f"Descuento para el producto {producto} con cantidad {cantidad}: {msg.payload.decode()}")
 
 class TopicSubOtherTopic(TopicSubscriptor):
