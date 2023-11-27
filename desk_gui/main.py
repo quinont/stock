@@ -1,8 +1,18 @@
+import paho.mqtt.publish as publish
 from tkinter import *
 import socket
 import datetime
 import json
 import os
+
+
+# Definir el nombre del servidor MQTT y el puerto
+brokerAddress = os.environ.get("brokerAddress", "192.168.88.1")
+port = int(os.environ.get("brokerPort", "1883"))
+topic_descontar = os.environ.get(
+    "TOPIC_DESCONTAR",
+    "/descontar/1/1/"
+)
 
 
 class JsonFileHandler:
@@ -139,13 +149,21 @@ class StockSystem:
         self.update_config_file()
 
     def remove_element(self):
-        self.store.write_text(datetime.datetime.now().strftime('%d/%m/%y - %H:%M:%S %p'))
+        fecha_hora = datetime.datetime.now().strftime('%d/%m/%y - %H:%M:%S %p')
+        self.store.write_text(fecha_hora)
         available = self.available.get()
         available = available - 1
         self.available.set(available)
         self.update_last_change()
         self.update_diff_days()
         self.update_config_file()
+        publish.single(
+            topic_descontar,
+            fecha_hora,
+            hostname=brokerAddress,
+            port=port
+        )
+
 
     def update_config_file(self):
         available = self.available.get()
