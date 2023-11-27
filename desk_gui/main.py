@@ -157,12 +157,17 @@ class StockSystem:
         self.update_last_change()
         self.update_diff_days()
         self.update_config_file()
-        publish.single(
-            topic_descontar,
-            fecha_hora,
-            hostname=brokerAddress,
-            port=port
-        )
+        try:
+            publish.single(
+                topic_descontar,
+                fecha_hora,
+                hostname=brokerAddress,
+                port=port
+            )
+        except Exception as e:
+            with open("error.txt", "a") as file:
+                mensaje_error = f"{fecha_hora} - Error: {str(e)}\n"
+                file.write(mensaje_error)
 
 
     def update_config_file(self):
