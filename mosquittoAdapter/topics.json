@@ -1,8 +1,8 @@
 {
     "topics": [
         {
-            "topic": "/descuento/+/+/",
-            "type": "HTTPCaller"
+            "topic": "/descontar/+/+/",
+            "type": "HTTPDescontar"
         },
         {
             "topic": "/otrotopico/#",

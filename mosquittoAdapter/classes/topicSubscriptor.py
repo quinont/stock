@@ -1,5 +1,17 @@
+import paho.mqtt.publish as publish
+import requests
 import logging
 import re
+import os
+
+
+# Definir el nombre del servidor MQTT y el puerto
+brokerAddress = os.environ.get("brokerAddress", "192.168.88.1")
+port = int(os.environ.get("brokerPort", "1883"))
+url_descontar = os.environ.get(
+    "URL_DESCONTAR",
+    "http://localhost:8080/descontar"
+)
 
 
 class TopicSubscriptor():
@@ -23,16 +35,39 @@ class TopicSubscriptor():
         pass
 
 
-class TopicSubHTTPCaller(TopicSubscriptor):
+class TopicSubHTTPDescontar(TopicSubscriptor):
     def handler(self, client, userdata, msg, match):
         producto = match.group(1)
         cantidad = match.group(2)
-        # TODO cambiar esto por un requests post con los detalles
-        # de lo que se consumio.
-        print(
-            f"Descuento para el producto {producto} "
-            f"con cantidad {cantidad}: {msg.payload.decode()}"
+
+        response = requests.patch(
+            f"{url_descontar}/{producto}/{cantidad}/"
         )
+
+        if response.status_code == 200:
+            respuesta_json = response.json()
+
+            prediccion = respuesta_json.get("prediccion")
+
+            if prediccion is not None:
+                logging.debug(f'Enviando {prediccion} al topico')
+                prediccion_fecha_hora = prediccion
+                publish.single(
+                    f"/prediccion/{producto}/",
+                    prediccion_fecha_hora,
+                    hostname=brokerAddress,
+                    port=port
+                )
+            else:
+                logging.error(
+                    "No se encontró el valor 'prediccion' en la respuesta."
+                )
+        else:
+            logging.error(
+                f'Error al hacer PATCH a {url_descontar}, '
+                f'Código de estado: {response.status_code}'
+            )
+            logging.error(response.text)
 
 
 class TopicSubOtherTopic(TopicSubscriptor):

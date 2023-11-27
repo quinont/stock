@@ -1,12 +1,12 @@
-from classes.topicSubscriptor import TopicSubHTTPCaller, TopicSubOtherTopic
+from classes.topicSubscriptor import TopicSubHTTPDescontar, TopicSubOtherTopic
 import logging
 
 
 class TopicSubscriberFactory:
     @staticmethod
     def createSubscriber(subscriberType, topic):
-        if subscriberType == "HTTPCaller":
-            return TopicSubHTTPCaller(topic)
+        if subscriberType == "HTTPDescontar":
+            return TopicSubHTTPDescontar(topic)
         elif subscriberType == "OtherTopic":
             return TopicSubOtherTopic(topic)
         else:
