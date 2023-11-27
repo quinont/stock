@@ -1,6 +1,6 @@
-from classes.loggingConfig import setupLogging
 import logging
 import re
+
 
 class TopicSubscriptor():
     def __init__(self, topic):
@@ -22,15 +22,23 @@ class TopicSubscriptor():
     def handler(self, client, userdata, msg, match):
         pass
 
+
 class TopicSubHTTPCaller(TopicSubscriptor):
     def handler(self, client, userdata, msg, match):
         producto = match.group(1)
         cantidad = match.group(2)
-        # TODO cambiar esto por un requests post con los detalles de lo que se consumio.
-        print(f"Descuento para el producto {producto} con cantidad {cantidad}: {msg.payload.decode()}")
+        # TODO cambiar esto por un requests post con los detalles
+        # de lo que se consumio.
+        print(
+            f"Descuento para el producto {producto} "
+            f"con cantidad {cantidad}: {msg.payload.decode()}"
+        )
+
 
 class TopicSubOtherTopic(TopicSubscriptor):
     def handler(self, client, userdata, msg, match):
         parametro = match.group(1)
-        print(f"Manejo especial para otro tópico con parámetro {parametro}: {msg.payload.decode()}")
-
+        print(
+            "Manejo especial para otro tópico con parámetro "
+            f"{parametro}: {msg.payload.decode()}"
+        )

@@ -3,10 +3,21 @@ from fastapi import FastAPI, HTTPException
 from datetime import datetime
 import uvicorn
 import gspread
+import logging
 import os
 
 json_keyfile_name = os.environ.get("JSON_KEYFILE_NAME", "credentials.json")
 sheet_key = os.environ.get("SHEET_KEY")
+
+
+class NoHealthCheckSuccessFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.args and \
+               len(record.args) >= 3 and \
+               record.args[2] != "/health"
+
+
+logging.getLogger("uvicorn.access").addFilter(NoHealthCheckSuccessFilter())
 
 
 class GoogleSheetAdapter():

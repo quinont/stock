@@ -1,10 +1,11 @@
-from classes.topicSubscriptor import *
+# from classes.topicSubscriptor import *
 from classes.mqttAdapter import MqttAdapter
 from classes.loggingConfig import setupLogging
 from classes.topicSubscriberFactory import TopicSubscriberFactory
+from fastapi import FastAPI
 
+import uvicorn
 import paho.mqtt.client as mqtt
-import re
 import os
 import logging
 import json
@@ -13,6 +14,10 @@ import json
 brokerAddress = os.environ.get("brokerAddress", "192.168.88.1")
 port = int(os.environ.get("brokerPort", "1883"))
 topicFile = os.environ.get("topicFile", "topics.json")
+
+
+setupLogging()
+app = FastAPI()
 
 
 def loadTopicSub(mqttAdapter):
@@ -36,7 +41,17 @@ def main():
     loadTopicSub(mqttAdapter)
 
     mqttAdapter.connectToServer()
+
     mqttAdapter.runForever()
+
+    # Corriendo el server
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
+
+# Es necesario que se tome el estado de la conexion de mqtt con el server
+@app.get("/health")
+def health_check():
+    return {"status": "OK"}
 
 
 if __name__ == "__main__":

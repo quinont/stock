@@ -1,7 +1,4 @@
-from classes.loggingConfig import setupLogging
 import logging
-import paho.mqtt.client as mqtt
-import re
 import sys
 
 
@@ -25,7 +22,10 @@ class MqttAdapter():
             for suber in self.subscriptors:
                 client.subscribe(suber.getTopic())
         else:
-            logging.error(f"No se pudo conectar al servidor MQTT. Código de retorno: {rc}")
+            logging.error(
+                "No se pudo conectar al servidor MQTT."
+                f"Código de retorno: {rc}"
+            )
             sys.exit(200)
 
     def on_message(self, client, userdata, msg):
@@ -35,7 +35,9 @@ class MqttAdapter():
                 logging.debug(f"Se encontro un manejador para {msg.topic}")
                 suber.handler(client, userdata, msg, match)
                 return
-        logging.error(f"No se encontró un manejador para el tópico: {msg.topic}")
+        logging.error(
+            f"No se encontró un manejador para el tópico: {msg.topic}"
+        )
 
     def connectToServer(self):
         logging.debug("Conectando al server")
@@ -43,4 +45,4 @@ class MqttAdapter():
 
     def runForever(self):
         logging.info("Comenzando a recibir mensajes")
-        self.client.loop_forever()
+        self.client.loop_start()
