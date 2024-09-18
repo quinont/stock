@@ -10,7 +10,7 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 # Configuración para el servidor Mosquitto
 MQTT_BROKER_ADDRESS = os.environ.get("MQTT_BROKER_ADDRESS")
-MQTT_TOPIC = os.environ.get("MQTT_TOPIC", "#")
+MQTT_TOPICS_LIST = os.environ.get("MQTT_TOPICS_LIST", "#")
 
 
 def on_message(client, userdata, msg):
@@ -33,7 +33,8 @@ def main():
     mqtt_client = mqtt.Client()
     mqtt_client.on_message = on_message
     mqtt_client.connect(MQTT_BROKER_ADDRESS, 1883, 60)
-    mqtt_client.subscribe(MQTT_TOPIC)
+    for topic in MQTT_TOPICS_LIST.split(","):
+        mqtt_client.subscribe(topic)
     mqtt_client.loop_start()
 
     # Configuración del bot de Telegram
